@@ -52,12 +52,12 @@ export function HeroSection() {
                 SKILLED IN
                 <br />
                 <span className="inline-block text-5xl relative text-indigo-600 mr-4">
-                  Web <br /> Design
+                  WEB <br /> DESIGN
                   <span className="absolute bottom-0 left-0 w-full h-1 bg-indigo-600 animate-highlight"></span>
                 </span>
                 AND
                 <span className="inline-block text-5xl relative text-primary ml-4">
-                  Development
+                  DEVELOPMENT
                   <span className="absolute bottom-0 left-0 w-full h-1 bg-primary animate-highlight-delay"></span>
                 </span>
               </h1>
