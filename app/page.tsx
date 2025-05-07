@@ -82,13 +82,13 @@ export default function Home() {
   return (
     <main className="min-h-screen">
       {/* Hero Section */}
-      <header className="flex items-center justify-between sticky top-0 bg-gray-50 z-50 text-center px-[100px]">
+      <header className="flex flex-wrap items-center justify-center gap-2 md:gap-0 md:justify-between sticky top-0 bg-gray-50 z-50 text-center px-4 md:px-[100px]">
         <div className="flex items-end gap-5">
           <Image src="/wwt_logo.png" alt="Logo" width={250} height={200} />
-          <p className="text-sm -mb-0.5 font-bold text-gray-900">A California Innovation Company</p>
+          <p className="hidden md:block text-sm -mb-0.5 font-bold text-gray-900">A California Innovation Company</p>
         </div>
         <div>
-          <h2 className="text-3xl text-orange-600 font-bold">Our Dynamic Portfolio</h2>
+          <h2 className="md:text-3xl text-xl text-orange-600 font-bold">Our Dynamic Portfolio</h2>
           <a href="mailto:support@waywisetech.com" className="text-orange-600 font-bold text-sm mt-2 block">support@waywisetech.com</a>
         </div>
         <div className="max-w-4xl  py-5 ">
@@ -109,7 +109,7 @@ export default function Home() {
           className="py-[120px] px-4 bg-white border-b-4 border-gray-200 last:border-0"
           id={`section-${category}`}
         >
-          <div className="px-16">
+          <div className="px-4 md:px-16">
             <div className="flex flex-col items-center gap-1 pb-[70px]">
               <h2 className="text-5xl font-semibold text-center capitalize">
                 {sectionInfo[category as SectionKey]?.title || `${category} Projects`}
