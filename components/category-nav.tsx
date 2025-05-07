@@ -39,7 +39,7 @@ export default function CategoryNav({ activeCategory, onCategoryChange }: Catego
           key={category.id}
           onClick={() => onCategoryChange(category.id)}
           className={cn(
-            "px-3 md:px-6 py-3 rounded-full font-medium transition-all text-xs",
+            "px-3 md:px-6 py-3 md:py-3 rounded-full font-medium transition-all text-xs md:text-lg",
             activeCategory === category.id
               ? "text-white shadow-lg bg-gradient-to-r"
               : "bg-white text-gray-700 hover:bg-gray-100",
