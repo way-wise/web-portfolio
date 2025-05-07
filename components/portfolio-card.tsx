@@ -89,7 +89,7 @@ export default function PortfolioCard({
           <p className="block">
             <h3 className="text-xl font-bold mb-2">{item.title}</h3>{" "}
           </p>
-          <p className="text-gray-600 mb-4 line-clamp-2">{item.description}</p>
+          <p className="text-gray-600 mb-4 line-clamp-3">{item.description}</p>
           <div className="flex flex-wrap gap-2 mb-6">
             {item.technologies.map((tech, index) => (
               <span
