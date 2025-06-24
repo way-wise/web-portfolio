@@ -1280,7 +1280,7 @@ export const sectionInfo = {
     "description": "Explore my backend projects with a focus on scalability and performance."
   },
   "mobile": {
-    "title": "Mobile Projects",
+    "title": "Mobile App Projects",
     "description": "Discover my mobile app projects with a range of features and capabilities."
   },
   "frontend": {

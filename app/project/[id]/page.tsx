@@ -88,7 +88,7 @@ export default function ProjectDetails({ params }: { params: { id: string } }) {
               </div>
 
               <div className="flex flex-wrap gap-4">
-                {project.demoUrl && (
+                {/* {project.demoUrl && (
                   <a
                     href={project.demoUrl}
                     target="_blank"
@@ -98,7 +98,7 @@ export default function ProjectDetails({ params }: { params: { id: string } }) {
                     <ExternalLink className="mr-2 h-5 w-5" />
                     View Live Demo
                   </a>
-                )}
+                )} */}
 
                 {project.githubUrl && (
                   <a

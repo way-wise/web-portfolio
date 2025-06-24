@@ -191,7 +191,7 @@ export default function PortfolioModal({ item, isOpen, onClose, onShare }: Portf
 
           {/* Action Buttons */}
           <div className="flex flex-col sm:flex-row gap-3 pt-4 border-t border-gray-200">
-            {item.demoUrl && (
+            {/* {item.demoUrl && (
               <a
                 href={item.demoUrl}
                 target="_blank"
@@ -201,7 +201,7 @@ export default function PortfolioModal({ item, isOpen, onClose, onShare }: Portf
                 <ExternalLink size={18} />
                 View Live Demo
               </a>
-            )}
+            )} */}
 
             {item.githubUrl && (
               <a
