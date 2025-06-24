@@ -3,18 +3,22 @@
 import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { ExternalLink, Github } from "lucide-react";
+import { ExternalLink, Github, Share2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { PortfolioItem } from "@/lib/portfolio-data";
 
 interface PortfolioCardProps {
   item: PortfolioItem;
   isHighlighted: boolean;
+  onShare?: () => void;
+  onClick?: () => void;
 }
 
 export default function PortfolioCard({
   item,
   isHighlighted,
+  onShare,
+  onClick,
 }: PortfolioCardProps) {
   const getCategoryColor = (category: string) => {
     switch (category) {
@@ -50,14 +54,23 @@ export default function PortfolioCard({
     }
   };
 
+  const handleCardClick = (e: React.MouseEvent) => {
+    // Don't trigger if clicking on share button or links
+    if ((e.target as HTMLElement).closest('button, a')) {
+      return;
+    }
+    onClick?.();
+  };
+
   return (
     <div
       className={cn(
-        "group rounded-xl overflow-hidden transition-all duration-300 hover:shadow-xl bg-white shadow-md p-0",
+        "group rounded-xl overflow-hidden transition-all duration-300 hover:shadow-xl bg-white shadow-md p-0 cursor-pointer",
         {
           [`outline outline-2 outline-offset-2 outline-orange-500`]: isHighlighted,
         }
       )}
+      onClick={handleCardClick}
     >
       <div
         className={cn(
@@ -83,12 +96,24 @@ export default function PortfolioCard({
           >
             {item.highlightKeyword}
           </span>
+          
+          {/* Share Button */}
+          {onShare && (
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onShare();
+              }}
+              className="absolute top-4 right-4 p-2 bg-white/80 hover:bg-white text-gray-700 hover:text-orange-600 rounded-full transition-all duration-200 opacity-0 group-hover:opacity-100"
+              title="Share this project"
+            >
+              <Share2 size={16} />
+            </button>
+          )}
         </div>
 
         <div className="p-6">
-          <p className="block">
-            <h3 className="text-xl font-bold mb-2">{item.title}</h3>{" "}
-          </p>
+          <h3 className="text-xl font-bold mb-2">{item.title}</h3>
           <p className="text-gray-600 mb-4 line-clamp-3">{item.description}</p>
           <div className="flex flex-wrap gap-2 mb-6">
             {item.technologies.map((tech, index) => (

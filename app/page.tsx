@@ -1,10 +1,11 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { useSearchParams } from "next/navigation";
-import { ArrowDown, ExternalLink, Github } from "lucide-react";
+import { useSearchParams, useRouter } from "next/navigation";
+import { ArrowDown, ExternalLink, Github, Share2, Copy } from "lucide-react";
 import CategoryNav from "@/components/category-nav";
 import PortfolioCard from "@/components/portfolio-card";
+import PortfolioModal from "@/components/portfolio-modal";
 import { portfolioItems } from "@/lib/portfolio-data";
 import Image from "next/image";
 import { sectionInfo } from "@/lib/portfolio-data";
@@ -13,21 +14,33 @@ type SectionKey = keyof typeof sectionInfo;
 
 export default function Home() {
   const searchParams = useSearchParams();
-  const [activeCategory, setActiveCategory] = useState<string>("backend");
+  const router = useRouter();
+  const [activeCategory, setActiveCategory] = useState<string>("wordpress");
   const [highlightedIds, setHighlightedIds] = useState<string[]>([]);
+  const [highlightedSection, setHighlightedSection] = useState<string | null>(null);
+  const [showShareTooltip, setShowShareTooltip] = useState(false);
+  const [modalItem, setModalItem] = useState<any>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const sectionRefs = useRef<Record<string, HTMLDivElement | null>>({
     backend: null,
     mobile: null,
     frontend: null,
     nocode: null,
+    wordpress: null,
+    shopify: null,
+    wix: null,
+    webflow: null,
     api: null,
   });
 
-  // Handle URL parameters for highlighting specific cards
+  // Handle URL parameters for highlighting specific cards and sections
   useEffect(() => {
     const idParam = searchParams.get("id");
+    const sectionParam = searchParams.get("section");
+    const modalParam = searchParams.get("modal");
+
+    // Handle card highlighting
     if (idParam) {
-      // Support multiple IDs separated by commas
       const ids = idParam.split(",");
       setHighlightedIds(ids);
 
@@ -37,7 +50,7 @@ export default function Home() {
         if (firstItem) {
           setActiveCategory(firstItem.category);
 
-          // Use a ref to track if we've already scrolled to avoid infinite loops
+          // Scroll to the section after a delay
           const timer = setTimeout(() => {
             if (sectionRefs.current[firstItem.category]) {
               sectionRefs.current[firstItem.category]?.scrollIntoView({
@@ -49,11 +62,55 @@ export default function Home() {
           return () => clearTimeout(timer);
         }
       }
+    } else {
+      setHighlightedIds([]);
     }
-  }, [searchParams]); // Only depend on searchParams
+
+    // Handle section highlighting
+    if (sectionParam) {
+      setHighlightedSection(sectionParam);
+      setActiveCategory(sectionParam);
+
+      // Scroll to the section after a delay
+      const timer = setTimeout(() => {
+        if (sectionRefs.current[sectionParam]) {
+          sectionRefs.current[sectionParam]?.scrollIntoView({
+            behavior: "smooth",
+          });
+        }
+      }, 500);
+
+      return () => clearTimeout(timer);
+    } else {
+      setHighlightedSection(null);
+    }
+
+    // Handle modal opening from URL
+    if (modalParam) {
+      const modalItem = portfolioItems.find((item) => item.id === modalParam);
+      if (modalItem) {
+        setModalItem(modalItem);
+        setIsModalOpen(true);
+        
+        // Also highlight the card
+        setHighlightedIds([modalParam]);
+        setActiveCategory(modalItem.category);
+
+        // Scroll to the section after a delay
+        const timer = setTimeout(() => {
+          if (sectionRefs.current[modalItem.category]) {
+            sectionRefs.current[modalItem.category]?.scrollIntoView({
+              behavior: "smooth",
+            });
+          }
+        }, 500);
+
+        return () => clearTimeout(timer);
+      }
+    }
+  }, [searchParams]);
 
   const scrollToCategory = (category: string) => {
-    // Don't update state here, just scroll
     if (sectionRefs.current[category]) {
       sectionRefs.current[category]?.scrollIntoView({ behavior: "smooth" });
     }
@@ -61,10 +118,61 @@ export default function Home() {
 
   const handleCategoryChange = (category: string) => {
     setActiveCategory(category);
-    // Use setTimeout to ensure the state update completes before scrolling
     setTimeout(() => {
       scrollToCategory(category);
     }, 0);
+  };
+
+  // Generate shareable URL for specific cards
+  const generateCardShareUrl = (cardIds: string[]) => {
+    const baseUrl = window.location.origin + window.location.pathname;
+    const params = new URLSearchParams();
+    params.set("id", cardIds.join(","));
+    return `${baseUrl}?${params.toString()}`;
+  };
+
+  // Generate shareable URL for specific section
+  const generateSectionShareUrl = (section: string) => {
+    const baseUrl = window.location.origin + window.location.pathname;
+    const params = new URLSearchParams();
+    params.set("section", section);
+    return `${baseUrl}?${params.toString()}`;
+  };
+
+  // Generate shareable URL for modal view
+  const generateModalShareUrl = (cardId: string) => {
+    const baseUrl = window.location.origin + window.location.pathname;
+    const params = new URLSearchParams();
+    params.set("modal", cardId);
+    return `${baseUrl}?${params.toString()}`;
+  };
+
+  // Copy URL to clipboard
+  const copyToClipboard = async (url: string) => {
+    try {
+      await navigator.clipboard.writeText(url);
+      setShowShareTooltip(true);
+      setTimeout(() => setShowShareTooltip(false), 2000);
+    } catch (err) {
+      console.error("Failed to copy URL:", err);
+    }
+  };
+
+  // Handle modal open/close
+  const openModal = (item: any) => {
+    setModalItem(item);
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setModalItem(null);
+    
+    // Remove modal parameter from URL when closing
+    const currentParams = new URLSearchParams(searchParams.toString());
+    currentParams.delete("modal");
+    const newUrl = `${window.location.pathname}${currentParams.toString() ? '?' + currentParams.toString() : ''}`;
+    router.replace(newUrl);
   };
 
   // Group portfolio items by category
@@ -76,8 +184,15 @@ export default function Home() {
     return acc;
   }, {} as Record<string, typeof portfolioItems>);
 
-  // Get unique categories
-  const categories = Object.keys(itemsByCategory);
+  // Get unique categories and sort them with priority categories first
+  const priorityCategories = ["wordpress", "shopify", "wix", "webflow"];
+  const allCategories = Object.keys(itemsByCategory);
+  
+  // Sort categories: priority categories first, then alphabetically
+  const categories = [
+    ...priorityCategories.filter(cat => allCategories.includes(cat)),
+    ...allCategories.filter(cat => !priorityCategories.includes(cat)).sort()
+  ];
 
   return (
     <main className="min-h-screen">
@@ -106,17 +221,28 @@ export default function Home() {
           ref={(el) => {
             sectionRefs.current[category] = el as HTMLDivElement | null;
           }}
-          className="py-[120px] px-4 bg-white border-b-4 border-gray-200 last:border-0"
+          className={`py-[120px] px-4 bg-white border-b-4 border-gray-200 last:border-0 transition-all duration-300 ${
+            highlightedSection === category ? 'bg-orange-50 border-orange-300' : ''
+          }`}
           id={`section-${category}`}
         >
           <div className="px-4 md:px-16">
-            <div className="flex flex-col items-center gap-1 pb-[70px]">
+            <div className="flex flex-col items-center gap-1 pb-[70px] relative">
               <h2 className="text-5xl font-semibold text-center capitalize">
                 {sectionInfo[category as SectionKey]?.title || `${category} Projects`}
               </h2>
               <p className="text-2xl text-gray-300">
                 {sectionInfo[category as SectionKey]?.description || "Explore my work in this category."}
               </p>
+              
+              {/* Share Section Button */}
+              <button
+                onClick={() => copyToClipboard(generateSectionShareUrl(category))}
+                className="absolute top-0 right-0 p-2 text-gray-500 hover:text-orange-600 transition-colors"
+                title="Share this section"
+              >
+                <Share2 size={20} />
+              </button>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-8">
               {itemsByCategory[category].map((item, index) => (
@@ -124,6 +250,8 @@ export default function Home() {
                   key={item.id + index}
                   item={item}
                   isHighlighted={highlightedIds.includes(item.id)}
+                  onShare={() => copyToClipboard(generateModalShareUrl(item.id))}
+                  onClick={() => openModal(item)}
                 />
               ))}
             </div>
@@ -131,6 +259,21 @@ export default function Home() {
         </section>
       ))}
 
+      {/* Portfolio Modal */}
+      <PortfolioModal
+        item={modalItem}
+        isOpen={isModalOpen}
+        onClose={closeModal}
+        onShare={() => modalItem && copyToClipboard(generateModalShareUrl(modalItem.id))}
+      />
+
+      {/* Share Tooltip */}
+      {showShareTooltip && (
+        <div className="fixed top-20 right-4 bg-green-500 text-white px-4 py-2 rounded-lg shadow-lg z-50 flex items-center gap-2">
+          <Copy size={16} />
+          <span>URL copied to clipboard!</span>
+        </div>
+      )}
 
       {/* Footer */}
       <footer className="bg-gray-900 text-white py-12 px-4">
