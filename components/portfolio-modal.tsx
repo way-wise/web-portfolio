@@ -203,7 +203,7 @@ export default function PortfolioModal({ item, isOpen, onClose, onShare }: Portf
               </a>
             )} */}
 
-            {item.githubUrl && (
+            {/* {item.githubUrl && (
               <a
                 href={item.githubUrl}
                 target="_blank"
@@ -213,7 +213,7 @@ export default function PortfolioModal({ item, isOpen, onClose, onShare }: Portf
                 <Github size={18} />
                 View Source Code
               </a>
-            )}
+            )} */}
 
             {!item.demoUrl && !item.githubUrl && (
               <button

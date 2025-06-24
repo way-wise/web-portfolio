@@ -100,7 +100,7 @@ export default function ProjectDetails({ params }: { params: { id: string } }) {
                   </a>
                 )} */}
 
-                {project.githubUrl && (
+                {/* {project.githubUrl && (
                   <a
                     href={project.githubUrl}
                     target="_blank"
@@ -110,7 +110,7 @@ export default function ProjectDetails({ params }: { params: { id: string } }) {
                     <Github className="mr-2 h-5 w-5" />
                     View Source Code
                   </a>
-                )}
+                )} */}
               </div>
             </div>
 
