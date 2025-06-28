@@ -14,6 +14,7 @@ export interface PortfolioItem {
   process?: string
 }
 
+// Static data for fallback
 export const portfolioItems: PortfolioItem[] = [
   {
     id: "backend-1",
@@ -1273,6 +1274,25 @@ export const portfolioItems: PortfolioItem[] = [
   },
 ]
 
+// Function to fetch portfolio items from API
+export async function fetchPortfolioItems(): Promise<PortfolioItem[]> {
+  try {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || ''}/api/portfolio`, {
+      cache: 'no-store'
+    });
+    
+    if (!response.ok) {
+      console.warn('Failed to fetch from API, using static data');
+      return portfolioItems;
+    }
+    
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.warn('Error fetching from API, using static data:', error);
+    return portfolioItems;
+  }
+}
 
 export const sectionInfo = {
   "backend": {
