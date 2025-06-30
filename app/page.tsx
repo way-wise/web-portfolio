@@ -6,7 +6,7 @@ import { ArrowDown, ExternalLink, Github, Share2, Copy } from "lucide-react";
 import CategoryNav from "@/components/category-nav";
 import PortfolioCard from "@/components/portfolio-card";
 import PortfolioModal from "@/components/portfolio-modal";
-import { portfolioItems } from "@/lib/portfolio-data";
+import { portfolioItems, fetchPortfolioItems, PortfolioItem } from "@/lib/portfolio-data";
 import Image from "next/image";
 import { sectionInfo } from "@/lib/portfolio-data";
 
@@ -21,6 +21,8 @@ export default function Home() {
   const [showShareTooltip, setShowShareTooltip] = useState(false);
   const [modalItem, setModalItem] = useState<any>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [dynamicPortfolioItems, setDynamicPortfolioItems] = useState<PortfolioItem[]>([]);
+  const [loading, setLoading] = useState(true);
   const sectionRefs = useRef<Record<string, HTMLDivElement | null>>({
     backend: null,
     mobile: null,
@@ -33,8 +35,27 @@ export default function Home() {
     api: null,
   });
 
+  // Fetch portfolio items from API
+  useEffect(() => {
+    const loadPortfolioItems = async () => {
+      try {
+        const items = await fetchPortfolioItems();
+        setDynamicPortfolioItems(items);
+      } catch (error) {
+        console.error('Error loading portfolio items:', error);
+        setDynamicPortfolioItems(portfolioItems);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadPortfolioItems();
+  }, []);
+
   // Handle URL parameters for highlighting specific cards and sections
   useEffect(() => {
+    if (loading) return;
+
     const idParam = searchParams.get("id");
     const sectionParam = searchParams.get("section");
     const modalParam = searchParams.get("modal");
@@ -46,7 +67,7 @@ export default function Home() {
 
       // If there's at least one ID, set the active category to the first highlighted item's category
       if (ids.length > 0) {
-        const firstItem = portfolioItems.find((item) => item.id === ids[0]);
+        const firstItem = dynamicPortfolioItems.find((item) => item.id === ids[0]);
         if (firstItem) {
           setActiveCategory(firstItem.category);
 
@@ -87,7 +108,7 @@ export default function Home() {
 
     // Handle modal opening from URL
     if (modalParam) {
-      const modalItem = portfolioItems.find((item) => item.id === modalParam);
+      const modalItem = dynamicPortfolioItems.find((item) => item.id === modalParam);
       if (modalItem) {
         setModalItem(modalItem);
         setIsModalOpen(true);
@@ -108,7 +129,7 @@ export default function Home() {
         return () => clearTimeout(timer);
       }
     }
-  }, [searchParams]);
+  }, [searchParams, dynamicPortfolioItems, loading]);
 
   const scrollToCategory = (category: string) => {
     if (sectionRefs.current[category]) {
@@ -176,13 +197,13 @@ export default function Home() {
   };
 
   // Group portfolio items by category
-  const itemsByCategory = portfolioItems.reduce((acc, item) => {
+  const itemsByCategory = dynamicPortfolioItems.reduce((acc, item) => {
     if (!acc[item.category]) {
       acc[item.category] = [];
     }
     acc[item.category].push(item);
     return acc;
-  }, {} as Record<string, typeof portfolioItems>);
+  }, {} as Record<string, PortfolioItem[]>);
 
   // Get unique categories and sort them with priority categories first
   const priorityCategories = ["wordpress", "shopify", "wix", "webflow"];
@@ -193,6 +214,17 @@ export default function Home() {
     ...priorityCategories.filter(cat => allCategories.includes(cat)),
     ...allCategories.filter(cat => !priorityCategories.includes(cat)).sort()
   ];
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-orange-600 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Loading portfolio...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <main className="min-h-screen">
