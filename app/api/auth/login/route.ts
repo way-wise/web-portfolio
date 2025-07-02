@@ -38,7 +38,17 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const isPasswordValid = await bcrypt.compare(password, admin.password);
+    // Handle bcrypt comparison with better error handling
+    let isPasswordValid = false;
+    try {
+      isPasswordValid = await bcrypt.compare(password, admin.password);
+    } catch (bcryptError) {
+      console.error('Bcrypt comparison error:', bcryptError);
+      return NextResponse.json(
+        { error: 'Authentication service error' },
+        { status: 500 }
+      );
+    }
 
     if (!isPasswordValid) {
       console.log(`Invalid password for username: ${username}`);
@@ -61,7 +71,9 @@ export async function POST(request: NextRequest) {
     console.error('Login error details:', {
       message: error instanceof Error ? error.message : 'Unknown error',
       stack: error instanceof Error ? error.stack : undefined,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
+      nodeEnv: process.env.NODE_ENV,
+      mongodbUri: process.env.MONGODB_URI ? 'Set' : 'Not set'
     });
     
     return NextResponse.json(

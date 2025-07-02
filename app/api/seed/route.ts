@@ -23,7 +23,16 @@ export async function POST(request: NextRequest) {
     const existingAdmin = await Admin.findOne({ username: 'admin' });
     if (!existingAdmin) {
       console.log('Creating new admin user');
-      const hashedPassword = await bcrypt.hash('admin123', 10);
+      let hashedPassword: string;
+      try {
+        hashedPassword = await bcrypt.hash('admin123', 10);
+      } catch (bcryptError) {
+        console.error('Bcrypt hashing error:', bcryptError);
+        return NextResponse.json(
+          { error: 'Failed to hash password' },
+          { status: 500 }
+        );
+      }
       await Admin.create({
         username: 'admin',
         password: hashedPassword,
