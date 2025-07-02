@@ -21,8 +21,7 @@ export default function Home() {
   const [showShareTooltip, setShowShareTooltip] = useState(false);
   const [modalItem, setModalItem] = useState<any>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [dynamicPortfolioItems, setDynamicPortfolioItems] = useState<PortfolioItem[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [dynamicPortfolioItems, setDynamicPortfolioItems] = useState<PortfolioItem[]>(portfolioItems);
   const sectionRefs = useRef<Record<string, HTMLDivElement | null>>({
     backend: null,
     mobile: null,
@@ -35,26 +34,10 @@ export default function Home() {
     api: null,
   });
 
-  // Fetch portfolio items from API
-  useEffect(() => {
-    const loadPortfolioItems = async () => {
-      try {
-        const items = await fetchPortfolioItems();
-        setDynamicPortfolioItems(items);
-      } catch (error) {
-        console.error('Error loading portfolio items:', error);
-        setDynamicPortfolioItems(portfolioItems);
-      } finally {
-        setLoading(false);
-      }
-    };
 
-    loadPortfolioItems();
-  }, []);
 
   // Handle URL parameters for highlighting specific cards and sections
   useEffect(() => {
-    if (loading) return;
 
     const idParam = searchParams.get("id");
     const sectionParam = searchParams.get("section");
@@ -129,7 +112,7 @@ export default function Home() {
         return () => clearTimeout(timer);
       }
     }
-  }, [searchParams, dynamicPortfolioItems, loading]);
+  }, [searchParams, dynamicPortfolioItems]);
 
   const scrollToCategory = (category: string) => {
     if (sectionRefs.current[category]) {
@@ -215,16 +198,7 @@ export default function Home() {
     ...allCategories.filter(cat => !priorityCategories.includes(cat)).sort()
   ];
 
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-orange-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Loading portfolio...</p>
-        </div>
-      </div>
-    );
-  }
+
 
   return (
     <main className="min-h-screen">
