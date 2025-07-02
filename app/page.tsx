@@ -220,7 +220,7 @@ export default function Home() {
         </div>
       </header>
 
-      <section className="flex flex-col items-center justify-center min-h-[60vh] bg-white">
+      <section className="flex flex-col items-center justify-center min-h-[60vh] bg-purple-50">
         <div className="container mx-auto px-4 md:px-16">
           <div className="flex flex-col md:flex-row items-center justify-between gap-12">
             <div className="flex-1 max-w-[600px]">
@@ -236,7 +236,7 @@ export default function Home() {
                     alt={`hero-right`}
                     width={600}
                     height={600}
-                    className="transition-opacity"
+                    className="transition-opacity rounded-lg"
                   />
             </div>
           </div>
