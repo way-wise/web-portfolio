@@ -220,6 +220,29 @@ export default function Home() {
         </div>
       </header>
 
+      <section className="flex flex-col items-center justify-center min-h-[60vh] bg-white">
+        <div className="container mx-auto px-4 md:px-16">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-12">
+            <div className="flex-1 max-w-[600px]">
+              <h1 className="text-5xl md:text-6xl font-bold mb-6">Software Consulting and Development</h1>
+              <p className="text-xl text-gray-600 mb-8">We help companies create innovative digital solutions and transform their brands for the modern age.</p>
+              <a href="#section-wordpress" className="inline-block bg-orange-600 text-white px-8 py-3 rounded-lg hover:bg-orange-700 transition-colors">
+                View Our Work
+              </a>
+            </div>
+            <div className="flex items-center justify-center p-4">
+                  <Image 
+                    src={`/hero-right.jpg`}
+                    alt={`hero-right`}
+                    width={600}
+                    height={600}
+                    className="transition-opacity"
+                  />
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Portfolio Sections - One for each category */}
       {categories.map((category) => (
         <section
@@ -237,7 +260,7 @@ export default function Home() {
               <h2 className="text-5xl font-semibold text-center capitalize">
                 {sectionInfo[category as SectionKey]?.title || `${category} Projects`}
               </h2>
-              <p className="text-2xl text-gray-300">
+              <p className="text-2xl text-gray-800">
                 {sectionInfo[category as SectionKey]?.description || "Explore my work in this category."}
               </p>
               
