@@ -11,7 +11,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Plus, Edit, Trash2, Eye, LogOut, Database } from "lucide-react";
+import { Plus, Edit, Trash2, Eye, LogOut, Database, Filter, X } from "lucide-react";
 import { toast } from "sonner";
 import ImageUpload from "@/components/ui/image-upload";
 
@@ -52,6 +52,8 @@ export default function AdminDashboard() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [portfolioItems, setPortfolioItems] = useState<PortfolioItem[]>([]);
+  const [filteredItems, setFilteredItems] = useState<PortfolioItem[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [loading, setLoading] = useState(false);
   const [editingItem, setEditingItem] = useState<PortfolioItem | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -71,6 +73,20 @@ export default function AdminDashboard() {
   });
   const router = useRouter();
 
+  // Available categories for filtering
+  const categories = [
+    { value: "all", label: "All Categories" },
+    { value: "wordpress", label: "WordPress" },
+    { value: "shopify", label: "Shopify" },
+    { value: "wix", label: "Wix" },
+    { value: "webflow", label: "Webflow" },
+    { value: "backend", label: "Backend" },
+    { value: "mobile", label: "Mobile" },
+    { value: "frontend", label: "Frontend" },
+    { value: "nocode", label: "No-Code" },
+    { value: "api", label: "API" }
+  ];
+
   // Check if user is logged in on component mount
   useEffect(() => {
     const adminData = localStorage.getItem("adminData");
@@ -79,6 +95,15 @@ export default function AdminDashboard() {
       fetchPortfolioItems();
     }
   }, []);
+
+  // Filter portfolio items when category changes or items are updated
+  useEffect(() => {
+    if (selectedCategory === "all") {
+      setFilteredItems(portfolioItems);
+    } else {
+      setFilteredItems(portfolioItems.filter(item => item.category === selectedCategory));
+    }
+  }, [selectedCategory, portfolioItems]);
 
   /**
    * Handle login form submission
@@ -349,6 +374,13 @@ export default function AdminDashboard() {
     }
   };
 
+  /**
+   * Clear category filter
+   */
+  const clearFilter = () => {
+    setSelectedCategory("all");
+  };
+
   if (!isLoggedIn) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
@@ -433,18 +465,54 @@ export default function AdminDashboard() {
           </TabsList>
 
           <TabsContent value="portfolio" className="space-y-6">
-            {/* Add New Item Button */}
+            {/* Add New Item Button and Filter */}
             <div className="flex justify-between items-center">
-              <h2 className="text-xl font-semibold">Portfolio Items ({portfolioItems.length})</h2>
-              <Button onClick={openCreateDialog}>
-                <Plus className="w-4 h-4 mr-2" />
-                Add New Item
-              </Button>
+              <div className="flex items-center gap-4">
+                <h2 className="text-xl font-semibold">
+                  Portfolio Items ({filteredItems.length} of {portfolioItems.length})
+                </h2>
+                {selectedCategory !== "all" && (
+                  <Badge variant="secondary" className="flex items-center gap-1">
+                    {categories.find(cat => cat.value === selectedCategory)?.label}
+                    <button
+                      onClick={clearFilter}
+                      className="ml-1 hover:text-red-500"
+                    >
+                      <X className="w-3 h-3" />
+                    </button>
+                  </Badge>
+                )}
+              </div>
+              <div className="flex items-center gap-4">
+                {/* Category Filter */}
+                <div className="flex items-center gap-2">
+                  <Filter className="w-4 h-4 text-gray-500" />
+                  <Select
+                    value={selectedCategory}
+                    onValueChange={setSelectedCategory}
+                  >
+                    <SelectTrigger className="w-48">
+                      <SelectValue placeholder="Filter by category" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {categories.map((category) => (
+                        <SelectItem key={category.value} value={category.value}>
+                          {category.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <Button onClick={openCreateDialog}>
+                  <Plus className="w-4 h-4 mr-2" />
+                  Add New Item
+                </Button>
+              </div>
             </div>
 
             {/* Portfolio Items Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {portfolioItems.map((item) => (
+              {filteredItems.map((item) => (
                 <Card key={item._id} className="overflow-hidden">
                   <div className="aspect-video bg-gray-200 relative">
                     <img
@@ -496,6 +564,24 @@ export default function AdminDashboard() {
                 </Card>
               ))}
             </div>
+
+            {/* No items message */}
+            {filteredItems.length === 0 && (
+              <div className="text-center py-12">
+                <div className="text-gray-500 mb-4">
+                  {selectedCategory === "all" ? (
+                    <p>No portfolio items found. Create your first item to get started!</p>
+                  ) : (
+                    <p>No items found in the selected category.</p>
+                  )}
+                </div>
+                {selectedCategory !== "all" && (
+                  <Button onClick={clearFilter} variant="outline">
+                    Clear Filter
+                  </Button>
+                )}
+              </div>
+            )}
           </TabsContent>
         </Tabs>
 
