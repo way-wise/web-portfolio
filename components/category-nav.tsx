@@ -22,9 +22,10 @@ const categories = [
 interface CategoryNavProps {
   activeCategory: string
   onCategoryChange: (category: string) => void
+  mobile?: boolean
 }
 
-export default function CategoryNav({ activeCategory, onCategoryChange }: CategoryNavProps) {
+export default function CategoryNav({ activeCategory, onCategoryChange, mobile = false }: CategoryNavProps) {
   const [expandedCategory, setExpandedCategory] = useState<string | null>(null)
   const dropdownRef = useRef<HTMLDivElement>(null)
 
@@ -82,13 +83,17 @@ export default function CategoryNav({ activeCategory, onCategoryChange }: Catego
   }
 
   return (
-    <div className="flex flex-wrap justify-center gap-3" ref={dropdownRef}>
+    <div className={cn(
+      "flex gap-3",
+      mobile ? "flex-col" : "flex-wrap justify-center"
+    )} ref={dropdownRef}>
       {categories.map((category) => (
-        <div key={category.id} className="relative">
+        <div key={category.id} className={cn("relative", mobile ? "w-full" : "")}>
           <button
             onClick={() => handleCategoryClick(category)}
             className={cn(
               "px-3 md:px-6 py-3 md:py-3 rounded-full font-medium transition-all text-xs md:text-lg flex items-center gap-2",
+              mobile ? "w-full justify-between text-left" : "",
               activeCategory === category.id || category.subcategories?.some(sub => activeCategory === sub.id)
                 ? "text-white shadow-lg bg-gradient-to-r"
                 : "bg-white text-gray-700 hover:bg-gray-100",
@@ -112,7 +117,10 @@ export default function CategoryNav({ activeCategory, onCategoryChange }: Catego
           </button>
           
           {category.subcategories && expandedCategory === category.id && (
-            <div className="absolute top-full left-0 mt-2 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-10 min-w-[200px] animate-in fade-in-0 slide-in-from-top-2 duration-200">
+            <div className={cn(
+              "bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-10 min-w-[200px] animate-in fade-in-0 slide-in-from-top-2 duration-200",
+              mobile ? "relative mt-2 w-full" : "absolute top-full left-0 mt-2"
+            )}>
               {category.subcategories.map((subcategory) => (
                 <button
                   key={subcategory.id}
