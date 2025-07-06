@@ -15,8 +15,7 @@ import CategoryNav from "@/components/category-nav";
 import PortfolioCard from "@/components/portfolio-card";
 import PortfolioModal from "@/components/portfolio-modal";
 import {
-  portfolioItems,
-  fetchPortfolioItems,
+  portfolioItems as fallbackItems,
   PortfolioItem,
 } from "@/lib/portfolio-data";
 import Image from "next/image";
@@ -36,8 +35,9 @@ export default function Home() {
   const [modalItem, setModalItem] = useState<any>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [dynamicPortfolioItems, setDynamicPortfolioItems] =
-    useState<PortfolioItem[]>(portfolioItems);
+    useState<PortfolioItem[]>([]);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const sectionRefs = useRef<Record<string, HTMLDivElement | null>>({
     backend: null,
     mobile: null,
@@ -49,6 +49,36 @@ export default function Home() {
     webflow: null,
     api: null,
   });
+
+  /**
+   * Fetch portfolio items from the database
+   */
+  const fetchPortfolioItems = async () => {
+    try {
+      setIsLoading(true);
+      const response = await fetch('/api/portfolio', {
+        cache: 'no-store'
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        setDynamicPortfolioItems(data);
+      } else {
+        console.warn('Failed to fetch from API, using fallback data');
+        setDynamicPortfolioItems(fallbackItems);
+      }
+    } catch (error) {
+      console.warn('Error fetching from API, using fallback data:', error);
+      setDynamicPortfolioItems(fallbackItems);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Fetch portfolio items on component mount
+  useEffect(() => {
+    fetchPortfolioItems();
+  }, []);
 
   // Handle URL parameters for highlighting specific cards and sections
   useEffect(() => {
@@ -274,7 +304,7 @@ export default function Home() {
 
       {/* Hero Section */}
       <header
-        className={`flex flex-wrap items-center justify-between gap-2 md:gap-0 md:justify-between sticky top-0 bg-gray-50 z-40 text-center px-4 md:px-[100px] py-4 ${
+        className={`flex flex-wrap md:flex-nowrap items-center justify-between gap-2 md:gap-0 md:justify-between sticky top-0 bg-gray-50 z-40 text-center px-4 md:px-[100px] py-4 ${
           isMobileMenuOpen ? "md:top-0 top-16" : "top-0"
         }`}
       >
@@ -295,13 +325,13 @@ export default function Home() {
             alt="Logo"
             width={250}
             height={200}
-            className="w-32 md:w-auto"
+            className="w-32 md:w-auto max-w-48"
           />
           <p className="hidden md:block text-sm -mb-0.5 font-bold text-gray-900">
             A California Innovation Company
           </p>
         </div>
-        <div className="hidden md:flex flex-1">
+        <div className="hidden md:flex md:flex-col flex-1">
           <h2 className="md:text-3xl text-lg text-orange-600 font-bold">
             Our Dynamic Portfolio
           </h2>
@@ -448,8 +478,16 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Loading State */}
+      {isLoading && (
+        <div className="flex items-center justify-center py-20">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-600"></div>
+          <span className="ml-3 text-gray-600">Loading portfolio...</span>
+        </div>
+      )}
+
       {/* Portfolio Sections - One for each category */}
-      {categories.map((category) => (
+      {!isLoading && categories.map((category) => (
         <section
           key={category}
           ref={(el) => {

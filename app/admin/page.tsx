@@ -10,8 +10,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Plus, Edit, Trash2, Eye, LogOut, Database } from "lucide-react";
 import { toast } from "sonner";
+import ImageUpload from "@/components/ui/image-upload";
 
 interface PortfolioItem {
   _id: string;
@@ -30,6 +32,21 @@ interface PortfolioItem {
   process?: string;
 }
 
+interface FormData {
+  title: string;
+  description: string;
+  category: string;
+  highlightKeyword: string;
+  image: string;
+  technologies: string;
+  demoUrl: string;
+  githubUrl: string;
+  completionDate: string;
+  longDescription: string;
+  features: string;
+  process: string;
+}
+
 export default function AdminDashboard() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [username, setUsername] = useState("");
@@ -38,6 +55,20 @@ export default function AdminDashboard() {
   const [loading, setLoading] = useState(false);
   const [editingItem, setEditingItem] = useState<PortfolioItem | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [formData, setFormData] = useState<FormData>({
+    title: "",
+    description: "",
+    category: "wordpress",
+    highlightKeyword: "",
+    image: "",
+    technologies: "",
+    demoUrl: "",
+    githubUrl: "",
+    completionDate: "",
+    longDescription: "",
+    features: "",
+    process: ""
+  });
   const router = useRouter();
 
   // Check if user is logged in on component mount
@@ -49,6 +80,10 @@ export default function AdminDashboard() {
     }
   }, []);
 
+  /**
+   * Handle login form submission
+   * @param e - Form event
+   */
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -79,6 +114,9 @@ export default function AdminDashboard() {
     }
   };
 
+  /**
+   * Handle logout
+   */
   const handleLogout = () => {
     localStorage.removeItem("adminData");
     setIsLoggedIn(false);
@@ -86,6 +124,9 @@ export default function AdminDashboard() {
     toast.success("Logged out successfully");
   };
 
+  /**
+   * Fetch all portfolio items from the database
+   */
   const fetchPortfolioItems = async () => {
     try {
       const response = await fetch("/api/portfolio");
@@ -96,6 +137,9 @@ export default function AdminDashboard() {
     }
   };
 
+  /**
+   * Handle database seeding
+   */
   const handleSeedDatabase = async () => {
     try {
       const response = await fetch("/api/seed", {
@@ -114,21 +158,96 @@ export default function AdminDashboard() {
     }
   };
 
-  const handleCreateItem = async (formData: FormData) => {
+  /**
+   * Reset form data to initial state
+   */
+  const resetFormData = () => {
+    setFormData({
+      title: "",
+      description: "",
+      category: "wordpress",
+      highlightKeyword: "",
+      image: "",
+      technologies: "",
+      demoUrl: "",
+      githubUrl: "",
+      completionDate: "",
+      longDescription: "",
+      features: "",
+      process: ""
+    });
+  };
+
+  /**
+   * Handle form field changes
+   * @param field - Field name
+   * @param value - Field value
+   */
+  const handleFormChange = (field: keyof FormData, value: string) => {
+    setFormData(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  };
+
+  /**
+   * Open create item dialog
+   */
+  const openCreateDialog = () => {
+    resetFormData();
+    setEditingItem(null);
+    setIsDialogOpen(true);
+  };
+
+  /**
+   * Open edit item dialog
+   * @param item - Portfolio item to edit
+   */
+  const openEditDialog = (item: PortfolioItem) => {
+    setFormData({
+      title: item.title,
+      description: item.description,
+      category: item.category,
+      highlightKeyword: item.highlightKeyword || "",
+      image: item.image,
+      technologies: item.technologies?.join(", ") || "",
+      demoUrl: item.demoUrl || "",
+      githubUrl: item.githubUrl || "",
+      completionDate: item.completionDate || "",
+      longDescription: item.longDescription || "",
+      features: item.features?.join(", ") || "",
+      process: item.process || ""
+    });
+    setEditingItem(item);
+    setIsDialogOpen(true);
+  };
+
+  /**
+   * Handle create item form submission
+   * @param e - Form event
+   */
+  const handleCreateItem = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!formData.title || !formData.description || !formData.category || !formData.image) {
+      toast.error("Please fill in all required fields");
+      return;
+    }
+
     try {
       const itemData = {
-        title: formData.get("title") as string,
-        description: formData.get("description") as string,
-        category: formData.get("category") as string,
-        highlightKeyword: formData.get("highlightKeyword") as string,
-        image: formData.get("image") as string,
-        technologies: (formData.get("technologies") as string).split(",").map(t => t.trim()),
-        demoUrl: formData.get("demoUrl") as string,
-        githubUrl: formData.get("githubUrl") as string,
-        completionDate: formData.get("completionDate") as string,
-        longDescription: formData.get("longDescription") as string,
-        features: (formData.get("features") as string).split(",").map(f => f.trim()),
-        process: formData.get("process") as string,
+        title: formData.title,
+        description: formData.description,
+        category: formData.category,
+        highlightKeyword: formData.highlightKeyword,
+        image: formData.image,
+        technologies: formData.technologies ? formData.technologies.split(",").map(t => t.trim()).filter(t => t) : [],
+        demoUrl: formData.demoUrl,
+        githubUrl: formData.githubUrl,
+        completionDate: formData.completionDate,
+        longDescription: formData.longDescription,
+        features: formData.features ? formData.features.split(",").map(f => f.trim()).filter(f => f) : [],
+        process: formData.process,
       };
 
       const response = await fetch("/api/portfolio", {
@@ -143,6 +262,7 @@ export default function AdminDashboard() {
         toast.success("Portfolio item created successfully!");
         fetchPortfolioItems();
         setIsDialogOpen(false);
+        resetFormData();
       } else {
         const data = await response.json();
         toast.error(data.error || "Failed to create item");
@@ -152,23 +272,34 @@ export default function AdminDashboard() {
     }
   };
 
-  const handleUpdateItem = async (formData: FormData) => {
+  /**
+   * Handle update item form submission
+   * @param e - Form event
+   */
+  const handleUpdateItem = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
     if (!editingItem) return;
+
+    if (!formData.title || !formData.description || !formData.category || !formData.image) {
+      toast.error("Please fill in all required fields");
+      return;
+    }
 
     try {
       const itemData = {
-        title: formData.get("title") as string,
-        description: formData.get("description") as string,
-        category: formData.get("category") as string,
-        highlightKeyword: formData.get("highlightKeyword") as string,
-        image: formData.get("image") as string,
-        technologies: (formData.get("technologies") as string).split(",").map(t => t.trim()),
-        demoUrl: formData.get("demoUrl") as string,
-        githubUrl: formData.get("githubUrl") as string,
-        completionDate: formData.get("completionDate") as string,
-        longDescription: formData.get("longDescription") as string,
-        features: (formData.get("features") as string).split(",").map(f => f.trim()),
-        process: formData.get("process") as string,
+        title: formData.title,
+        description: formData.description,
+        category: formData.category,
+        highlightKeyword: formData.highlightKeyword,
+        image: formData.image,
+        technologies: formData.technologies ? formData.technologies.split(",").map(t => t.trim()).filter(t => t) : [],
+        demoUrl: formData.demoUrl,
+        githubUrl: formData.githubUrl,
+        completionDate: formData.completionDate,
+        longDescription: formData.longDescription,
+        features: formData.features ? formData.features.split(",").map(f => f.trim()).filter(f => f) : [],
+        process: formData.process,
       };
 
       const response = await fetch(`/api/portfolio/${editingItem.id}`, {
@@ -184,6 +315,7 @@ export default function AdminDashboard() {
         fetchPortfolioItems();
         setEditingItem(null);
         setIsDialogOpen(false);
+        resetFormData();
       } else {
         const data = await response.json();
         toast.error(data.error || "Failed to update item");
@@ -193,6 +325,10 @@ export default function AdminDashboard() {
     }
   };
 
+  /**
+   * Handle delete item
+   * @param id - Portfolio item ID
+   */
   const handleDeleteItem = async (id: string) => {
     if (!confirm("Are you sure you want to delete this item?")) return;
 
@@ -300,81 +436,10 @@ export default function AdminDashboard() {
             {/* Add New Item Button */}
             <div className="flex justify-between items-center">
               <h2 className="text-xl font-semibold">Portfolio Items ({portfolioItems.length})</h2>
-              <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-                <DialogTrigger asChild>
-                  <Button>
-                    <Plus className="w-4 h-4 mr-2" />
-                    Add New Item
-                  </Button>
-                </DialogTrigger>
-                <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-                  <DialogHeader>
-                    <DialogTitle>Add New Portfolio Item</DialogTitle>
-                  </DialogHeader>
-                  <form action={handleCreateItem} className="space-y-4">
-                    <div className="grid grid-cols-2 gap-4">
-                      <div>
-                        <Label htmlFor="title">Title</Label>
-                        <Input id="title" name="title" required />
-                      </div>
-                      <div>
-                        <Label htmlFor="category">Category</Label>
-                        <Input id="category" name="category" required />
-                      </div>
-                    </div>
-                    <div>
-                      <Label htmlFor="description">Description</Label>
-                      <Textarea id="description" name="description" required />
-                    </div>
-                    <div className="grid grid-cols-2 gap-4">
-                      <div>
-                        <Label htmlFor="highlightKeyword">Highlight Keyword</Label>
-                        <Input id="highlightKeyword" name="highlightKeyword" />
-                      </div>
-                      <div>
-                        <Label htmlFor="image">Image Path</Label>
-                        <Input id="image" name="image" required />
-                      </div>
-                    </div>
-                    <div>
-                      <Label htmlFor="technologies">Technologies (comma-separated)</Label>
-                      <Input id="technologies" name="technologies" placeholder="React, Node.js, MongoDB" />
-                    </div>
-                    <div className="grid grid-cols-2 gap-4">
-                      <div>
-                        <Label htmlFor="demoUrl">Demo URL</Label>
-                        <Input id="demoUrl" name="demoUrl" />
-                      </div>
-                      <div>
-                        <Label htmlFor="githubUrl">GitHub URL</Label>
-                        <Input id="githubUrl" name="githubUrl" />
-                      </div>
-                    </div>
-                    <div>
-                      <Label htmlFor="completionDate">Completion Date</Label>
-                      <Input id="completionDate" name="completionDate" placeholder="August 2023" />
-                    </div>
-                    <div>
-                      <Label htmlFor="longDescription">Long Description</Label>
-                      <Textarea id="longDescription" name="longDescription" />
-                    </div>
-                    <div>
-                      <Label htmlFor="features">Features (comma-separated)</Label>
-                      <Textarea id="features" name="features" placeholder="Feature 1, Feature 2, Feature 3" />
-                    </div>
-                    <div>
-                      <Label htmlFor="process">Process</Label>
-                      <Textarea id="process" name="process" />
-                    </div>
-                    <div className="flex justify-end gap-2">
-                      <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}>
-                        Cancel
-                      </Button>
-                      <Button type="submit">Create Item</Button>
-                    </div>
-                  </form>
-                </DialogContent>
-              </Dialog>
+              <Button onClick={openCreateDialog}>
+                <Plus className="w-4 h-4 mr-2" />
+                Add New Item
+              </Button>
             </div>
 
             {/* Portfolio Items Grid */}
@@ -412,10 +477,7 @@ export default function AdminDashboard() {
                       <Button
                         size="sm"
                         variant="outline"
-                        onClick={() => {
-                          setEditingItem(item);
-                          setIsDialogOpen(true);
-                        }}
+                        onClick={() => openEditDialog(item)}
                       >
                         <Edit className="w-4 h-4 mr-1" />
                         Edit
@@ -437,81 +499,157 @@ export default function AdminDashboard() {
           </TabsContent>
         </Tabs>
 
-        {/* Edit Dialog */}
-        {editingItem && (
-          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-            <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-              <DialogHeader>
-                <DialogTitle>Edit Portfolio Item</DialogTitle>
-              </DialogHeader>
-              <form action={handleUpdateItem} className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="edit-title">Title</Label>
-                    <Input id="edit-title" name="title" defaultValue={editingItem.title} required />
-                  </div>
-                  <div>
-                    <Label htmlFor="edit-category">Category</Label>
-                    <Input id="edit-category" name="category" defaultValue={editingItem.category} required />
-                  </div>
+        {/* Create/Edit Dialog */}
+        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle>
+                {editingItem ? "Edit Portfolio Item" : "Add New Portfolio Item"}
+              </DialogTitle>
+            </DialogHeader>
+            <form onSubmit={editingItem ? handleUpdateItem : handleCreateItem} className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="title">Title *</Label>
+                  <Input 
+                    id="title" 
+                    value={formData.title}
+                    onChange={(e) => handleFormChange("title", e.target.value)}
+                    required 
+                  />
                 </div>
                 <div>
-                  <Label htmlFor="edit-description">Description</Label>
-                  <Textarea id="edit-description" name="description" defaultValue={editingItem.description} required />
+                  <Label htmlFor="category">Category *</Label>
+                  <Select
+                    value={formData.category}
+                    onValueChange={(value) => handleFormChange("category", value)}
+                    required
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select category" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="wordpress">WordPress</SelectItem>
+                      <SelectItem value="shopify">Shopify</SelectItem>
+                      <SelectItem value="wix">Wix</SelectItem>
+                      <SelectItem value="webflow">Webflow</SelectItem>
+                      <SelectItem value="backend">Backend</SelectItem>
+                      <SelectItem value="mobile">Mobile</SelectItem>
+                      <SelectItem value="frontend">Frontend</SelectItem>
+                      <SelectItem value="nocode">No-Code</SelectItem>
+                      <SelectItem value="api">API</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="edit-highlightKeyword">Highlight Keyword</Label>
-                    <Input id="edit-highlightKeyword" name="highlightKeyword" defaultValue={editingItem.highlightKeyword} />
-                  </div>
-                  <div>
-                    <Label htmlFor="edit-image">Image Path</Label>
-                    <Input id="edit-image" name="image" defaultValue={editingItem.image} required />
-                  </div>
+              </div>
+              <div>
+                <Label htmlFor="description">Description *</Label>
+                <Textarea 
+                  id="description" 
+                  value={formData.description}
+                  onChange={(e) => handleFormChange("description", e.target.value)}
+                  required 
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="highlightKeyword">Highlight Keyword</Label>
+                  <Input 
+                    id="highlightKeyword" 
+                    value={formData.highlightKeyword}
+                    onChange={(e) => handleFormChange("highlightKeyword", e.target.value)}
+                  />
+                </div>
+              </div>
+              
+              {/* Image Upload Component */}
+              <ImageUpload
+                value={formData.image}
+                onChange={(value) => handleFormChange("image", value)}
+                label="Project Image"
+                required={true}
+              />
+              
+              <div>
+                <Label htmlFor="technologies">Technologies (comma-separated)</Label>
+                <Input 
+                  id="technologies" 
+                  value={formData.technologies}
+                  onChange={(e) => handleFormChange("technologies", e.target.value)}
+                  placeholder="React, Node.js, MongoDB" 
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="demoUrl">Demo URL</Label>
+                  <Input 
+                    id="demoUrl" 
+                    value={formData.demoUrl}
+                    onChange={(e) => handleFormChange("demoUrl", e.target.value)}
+                  />
                 </div>
                 <div>
-                  <Label htmlFor="edit-technologies">Technologies (comma-separated)</Label>
-                  <Input id="edit-technologies" name="technologies" defaultValue={editingItem.technologies?.join(", ")} />
+                  <Label htmlFor="githubUrl">GitHub URL</Label>
+                  <Input 
+                    id="githubUrl" 
+                    value={formData.githubUrl}
+                    onChange={(e) => handleFormChange("githubUrl", e.target.value)}
+                  />
                 </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="edit-demoUrl">Demo URL</Label>
-                    <Input id="edit-demoUrl" name="demoUrl" defaultValue={editingItem.demoUrl} />
-                  </div>
-                  <div>
-                    <Label htmlFor="edit-githubUrl">GitHub URL</Label>
-                    <Input id="edit-githubUrl" name="githubUrl" defaultValue={editingItem.githubUrl} />
-                  </div>
-                </div>
-                <div>
-                  <Label htmlFor="edit-completionDate">Completion Date</Label>
-                  <Input id="edit-completionDate" name="completionDate" defaultValue={editingItem.completionDate} />
-                </div>
-                <div>
-                  <Label htmlFor="edit-longDescription">Long Description</Label>
-                  <Textarea id="edit-longDescription" name="longDescription" defaultValue={editingItem.longDescription} />
-                </div>
-                <div>
-                  <Label htmlFor="edit-features">Features (comma-separated)</Label>
-                  <Textarea id="edit-features" name="features" defaultValue={editingItem.features?.join(", ")} />
-                </div>
-                <div>
-                  <Label htmlFor="edit-process">Process</Label>
-                  <Textarea id="edit-process" name="process" defaultValue={editingItem.process} />
-                </div>
-                <div className="flex justify-end gap-2">
-                  <Button type="button" variant="outline" onClick={() => {
-                    setEditingItem(null);
+              </div>
+              <div>
+                <Label htmlFor="completionDate">Completion Date</Label>
+                <Input 
+                  id="completionDate" 
+                  value={formData.completionDate}
+                  onChange={(e) => handleFormChange("completionDate", e.target.value)}
+                  placeholder="August 2023" 
+                />
+              </div>
+              <div>
+                <Label htmlFor="longDescription">Long Description</Label>
+                <Textarea 
+                  id="longDescription" 
+                  value={formData.longDescription}
+                  onChange={(e) => handleFormChange("longDescription", e.target.value)}
+                />
+              </div>
+              <div>
+                <Label htmlFor="features">Features (comma-separated)</Label>
+                <Textarea 
+                  id="features" 
+                  value={formData.features}
+                  onChange={(e) => handleFormChange("features", e.target.value)}
+                  placeholder="Feature 1, Feature 2, Feature 3" 
+                />
+              </div>
+              <div>
+                <Label htmlFor="process">Process</Label>
+                <Textarea 
+                  id="process" 
+                  value={formData.process}
+                  onChange={(e) => handleFormChange("process", e.target.value)}
+                />
+              </div>
+              <div className="flex justify-end gap-2">
+                <Button 
+                  type="button" 
+                  variant="outline" 
+                  onClick={() => {
                     setIsDialogOpen(false);
-                  }}>
-                    Cancel
-                  </Button>
-                  <Button type="submit">Update Item</Button>
-                </div>
-              </form>
-            </DialogContent>
-          </Dialog>
-        )}
+                    setEditingItem(null);
+                    resetFormData();
+                  }}
+                >
+                  Cancel
+                </Button>
+                <Button type="submit">
+                  {editingItem ? "Update Item" : "Create Item"}
+                </Button>
+              </div>
+            </form>
+          </DialogContent>
+        </Dialog>
       </main>
     </div>
   );
