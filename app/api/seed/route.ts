@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import dbConnect from '@/lib/mongodb';
-import Portfolio from '@/lib/models/Portfolio';
 import Admin from '@/lib/models/Admin';
 import bcrypt from 'bcryptjs';
 import { portfolioItems } from '@/lib/portfolio-data';
+import mongoose from 'mongoose';
 
 /**
  * Handle database seeding requests
@@ -42,8 +42,17 @@ export async function POST(request: NextRequest) {
       console.log('Admin user already exists');
     }
 
-    // Clear existing portfolio items
+    // Clear existing portfolio items and force model refresh
     console.log('Clearing existing portfolio items');
+    
+    // Force delete the existing model to clear cache
+    if (mongoose.models.Portfolio) {
+      delete mongoose.models.Portfolio;
+    }
+    
+    // Re-import the Portfolio model
+    const Portfolio = (await import('@/lib/models/Portfolio')).default;
+    
     const deleteResult = await Portfolio.deleteMany({});
     console.log(`Deleted ${deleteResult.deletedCount} existing portfolio items`);
     

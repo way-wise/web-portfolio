@@ -27,8 +27,8 @@ const portfolioSchema = new mongoose.Schema({
     required: [true, 'Category is required'],
     trim: true,
     enum: {
-      values: ['wordpress', 'shopify', 'wix', 'webflow', 'backend', 'mobile', 'frontend', 'nocode', 'api'],
-      message: 'Category must be one of: wordpress, shopify, wix, webflow, backend, mobile, frontend, nocode, api'
+      values: ['wordpress', 'shopify', 'wix', 'webflow', 'backend', 'mobile', 'frontend', 'nocode', 'api', 'email-templates'],
+      message: 'Category must be one of: wordpress, shopify, wix, webflow, backend, mobile, frontend, nocode, api, email-templates'
     }
   },
   highlightKeyword: {

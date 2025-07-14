@@ -20,7 +20,7 @@ export const portfolioItems: PortfolioItem[] = [
     id: "backend-1",
     title: "Deshboard",
     description: "Deshboard for manage users and products and analytics.",
-    category: "backend-api",
+    category: "backend",
     highlightKeyword: "Laravel Dashboard",
     image: "/web/web-6.webp",
     technologies: ["Node.js", "Socket.io", "PostgreSQL"],
@@ -38,7 +38,7 @@ export const portfolioItems: PortfolioItem[] = [
     id: "backend-2",
     title: "E-commerce Backend",
     description: "A scalable backend system for e-commerce platforms with inventory management.",
-    category: "backend-api",
+    category: "backend",
     highlightKeyword: "E-commerce",
     image: "/web/web-2.jpg",
     technologies: ["Node.js", "Express", "MongoDB", "Redis"],
@@ -58,7 +58,7 @@ export const portfolioItems: PortfolioItem[] = [
     id: "backend-3",
     title: "E-Learning Backend",
     description: "E-learning backend system for manage users and courses and analytics.",
-    category: "backend-api",
+    category: "backend",
     highlightKeyword: "E-Learning",
     image: "/web/web-9.webp",
     technologies: ["Node.js", "Socket.io", "PostgreSQL"],
@@ -76,7 +76,7 @@ export const portfolioItems: PortfolioItem[] = [
     id: "backend-4",
     title: "E-learning Dashboard",
     description: "E-learning dashboard for manage users and courses and analytics.",
-    category: "backend-api",
+    category: "backend",
     highlightKeyword: "React Dashboard",
     image: "/web/web-10.webp",
     technologies: ["Node.js", "Socket.io", "PostgreSQL"],
@@ -94,7 +94,7 @@ export const portfolioItems: PortfolioItem[] = [
     id: "api-1",
     title: "E-commerce site API",
     description: "Secure payment processing API with multiple provider integrations and e-commerce features.",
-    category: "backend-api",
+    category: "api",
     highlightKeyword: "Payment",
     image: "/web/web-7.webp",
     technologies: ["Node.js", "Express", "Stripe API", "PayPal API"],
@@ -111,7 +111,7 @@ export const portfolioItems: PortfolioItem[] = [
     id: "api-2",
     title: "Product Management API",
     description: "Product management RESTful API with e-commerce features.",
-    category: "backend-api",
+    category: "api",
     highlightKeyword: "Product Management",
     image: "/web/web-8.webp",
     technologies: ["Python", "FastAPI", "Redis", "Docker"],
@@ -129,7 +129,7 @@ export const portfolioItems: PortfolioItem[] = [
     id: "api-3",
     title: "Inventory Management API",
     description: "inventory management RESTful API with e-commerce features.",
-    category: "backend-api",
+    category: "api",
     highlightKeyword: "Inventory",
     image: "/web/web-11.webp",
     technologies: ["Python", "FastAPI", "Redis", "Docker"],
@@ -147,7 +147,7 @@ export const portfolioItems: PortfolioItem[] = [
     id: "api-4",
     title: "E-learning API",
     description: "E-learning API for manage users and courses and analytics.",
-    category: "backend-api",
+    category: "api",
     highlightKeyword: "E-learning",
     image: "/web/web-10.webp",
     technologies: ["Python", "FastAPI", "Redis", "Docker"],
@@ -165,7 +165,7 @@ export const portfolioItems: PortfolioItem[] = [
     id: "backend-5",
     title: "Social Media Analytics API",
     description: "Comprehensive social media analytics API with sentiment analysis and trend tracking.",
-    category: "backend-api",
+    category: "api",
     highlightKeyword: "Analytics",
     image: "/web/web-1.webp",
     technologies: ["Node.js", "Express", "MongoDB", "Redis"],
@@ -183,7 +183,7 @@ export const portfolioItems: PortfolioItem[] = [
     id: "backend-6",
     title: "Payment Gateway API",
     description: "Secure payment gateway API with multiple payment method support and fraud detection.",
-    category: "backend-api",
+    category: "api",
     highlightKeyword: "Payment",
     image: "/web/web-2.jpg",
     technologies: ["Python", "Django", "PostgreSQL", "Stripe"],
@@ -201,7 +201,7 @@ export const portfolioItems: PortfolioItem[] = [
     id: "backend-7",
     title: "File Management API",
     description: "Cloud-based file management API with upload, storage, and sharing capabilities.",
-    category: "backend-api",
+    category: "api",
     highlightKeyword: "File Management",
     image: "/web/web-3.jpg",
     technologies: ["Node.js", "Express", "AWS S3", "MongoDB"],
@@ -219,7 +219,7 @@ export const portfolioItems: PortfolioItem[] = [
     id: "backend-8",
     title: "Notification Service API",
     description: "Multi-channel notification service API supporting email, SMS, and push notifications.",
-    category: "backend-api",
+    category: "api",
     highlightKeyword: "Notifications",
     image: "/web/web-4.webp",
     technologies: ["Python", "FastAPI", "Redis", "Celery"],
@@ -1272,6 +1272,42 @@ export const portfolioItems: PortfolioItem[] = [
       "Content recommendation engine",
     ],
   },
+  {
+    id: "email-templates-1",
+    title: "Email Templates",
+    description: "Email templates with a focus on scalability and performance.",
+    category: "email-templates",
+    highlightKeyword: "Email Templates",
+    image: "/email-template/email-template-1.png",
+    technologies: ["Email Templates", "Email Templates", "Email Templates"],
+  },
+  {
+    id: "email-templates-2",
+    title: "Email Templates",
+    description: "Email templates with a focus on scalability and performance.",
+    category: "email-templates",
+    highlightKeyword: "Email Templates",
+    image: "/email-template/email-template-2.png",
+    technologies: ["Email Templates", "Email Templates", "Email Templates"],
+  },
+  {
+    id: "email-templates-3",
+    title: "Email Templates",
+    description: "Email templates with a focus on scalability and performance.",  
+    category: "email-templates",
+    highlightKeyword: "Email Templates",
+    image: "/email-template/email-template-3.png",
+    technologies: ["Email Templates", "Email Templates", "Email Templates"],
+  },
+  {
+    id: "email-templates-4",
+    title: "Email Templates",
+    description: "Email templates with a focus on scalability and performance.",
+    category: "email-templates",
+    highlightKeyword: "Email Templates",
+    image: "/email-template/email-template-4.png",
+    technologies: ["Email Templates", "Email Templates", "Email Templates"],
+  }
 ]
 
 // Function to fetch portfolio items from API
@@ -1330,5 +1366,21 @@ export const sectionInfo = {
   "api": {
     "title": "API Projects",
     "description": "Discover my API projects with a focus on scalability and performance."
+  },
+  "email-templates": {
+    "title": "Email Templates",
+    "description": "Discover my email templates with a focus on scalability and performance."
+  },
+  "react": {
+    "title": "React Projects",
+    "description": "Discover my React projects with a focus on scalability and performance."
+  },
+  "nextjs": {
+    "title": "Next.js Projects",
+    "description": "Discover my Next.js projects with a focus on scalability and performance."
+  },
+  "tailwind": {
+    "title": "Tailwind Projects",
+    "description": "Discover my Tailwind projects with a focus on scalability and performance."
   }
 }

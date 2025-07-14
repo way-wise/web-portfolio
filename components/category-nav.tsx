@@ -16,7 +16,14 @@ const categories = [
   },
   { id: "backend-api", label: "Backend & API" },
   { id: "mobile", label: "Mobile App" },
-  { id: "frontend", label: "Frontend" },
+  { id: "frontend", label: "Frontend",
+    subcategories: [
+      { id: "email-templates", label: "Email Templates" },
+      { id: "react", label: "React" },
+      { id: "nextjs", label: "Next.js" },
+      { id: "tailwind", label: "Tailwind" },
+    ]
+  },
 ]
 
 interface CategoryNavProps {

@@ -84,7 +84,8 @@ export default function AdminDashboard() {
     { value: "mobile", label: "Mobile" },
     { value: "frontend", label: "Frontend" },
     { value: "nocode", label: "No-Code" },
-    { value: "api", label: "API" }
+    { value: "api", label: "API" },
+    { value: "email-templates", label: "Email Templates" }
   ];
 
   // Check if user is logged in on component mount
@@ -624,6 +625,7 @@ export default function AdminDashboard() {
                       <SelectItem value="frontend">Frontend</SelectItem>
                       <SelectItem value="nocode">No-Code</SelectItem>
                       <SelectItem value="api">API</SelectItem>
+                      <SelectItem value="email-templates">Email Templates</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
