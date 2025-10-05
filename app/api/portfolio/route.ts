@@ -46,7 +46,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Validate category
-    const validCategories = ['wordpress', 'shopify', 'wix', 'webflow', 'backend', 'mobile', 'frontend', 'nocode', 'api'];
+    const validCategories = ['wordpress', 'shopify', 'wix', 'webflow', 'backend', 'mobile', 'frontend', 'nocode', 'api', 'email-templates', 'react', 'nextjs', 'tailwind'];
     if (!validCategories.includes(data.category)) {
       return NextResponse.json(
         { error: `Invalid category. Must be one of: ${validCategories.join(', ')}` },

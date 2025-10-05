@@ -48,6 +48,10 @@ export default function Home() {
     wix: null,
     webflow: null,
     api: null,
+    "email-templates": null,
+    react: null,
+    nextjs: null,
+    tailwind: null,
   });
 
   /**
@@ -162,8 +166,9 @@ export default function Home() {
   }, [searchParams, dynamicPortfolioItems]);
 
   const scrollToCategory = (category: string) => {
-    if (sectionRefs.current[category]) {
-      sectionRefs.current[category]?.scrollIntoView({ behavior: "smooth" });
+    const element = document.getElementById(`section-${category}`);
+    if (element) {
+      element.scrollIntoView({ behavior: "smooth" });
     }
   };
 
@@ -458,12 +463,17 @@ export default function Home() {
                 We help companies create innovative digital solutions and
                 transform their brands for the modern age.
               </p>
-              <a
-                href="#section-wordpress"
+              <button
+                onClick={() => {
+                  const firstCategory = categories[0];
+                  if (firstCategory) {
+                    scrollToCategory(firstCategory);
+                  }
+                }}
                 className="inline-block bg-orange-600 text-white px-8 py-3 rounded-lg hover:bg-orange-700 transition-colors"
               >
                 View Our Work
-              </a>
+              </button>
             </div>
             <div className="flex items-center justify-center p-4">
               <Image

@@ -85,7 +85,10 @@ export default function AdminDashboard() {
     { value: "frontend", label: "Frontend" },
     { value: "nocode", label: "No-Code" },
     { value: "api", label: "API" },
-    { value: "email-templates", label: "Email Templates" }
+    { value: "email-templates", label: "Email Templates" },
+    { value: "react", label: "React" },
+    { value: "nextjs", label: "Next.js" },
+    { value: "tailwind", label: "Tailwind" }
   ];
 
   // Check if user is logged in on component mount

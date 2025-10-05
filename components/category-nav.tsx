@@ -14,7 +14,8 @@ const categories = [
       { id: "webflow", label: "Webflow" }
     ]
   },
-  { id: "backend-api", label: "Backend & API" },
+  { id: "backend", label: "Backend" },
+  { id: "api", label: "API" },
   { id: "mobile", label: "Mobile App" },
   { id: "frontend", label: "Frontend",
     subcategories: [
@@ -54,6 +55,8 @@ export default function CategoryNav({ activeCategory, onCategoryChange, mobile =
     switch (category) {
       case "backend":
         return "from-emerald-400 to-teal-600"
+      case "api":
+        return "from-cyan-400 to-blue-600"
       case "mobile":
         return "from-purple-400 to-indigo-600"
       case "frontend":
@@ -68,8 +71,14 @@ export default function CategoryNav({ activeCategory, onCategoryChange, mobile =
         return "from-purple-400 to-purple-600"
       case "webflow":
         return "from-cyan-400 to-cyan-600"
-      case "api":
-        return "from-cyan-400 to-blue-600"
+      case "email-templates":
+        return "from-pink-400 to-rose-600"
+      case "react":
+        return "from-blue-400 to-cyan-600"
+      case "nextjs":
+        return "from-gray-400 to-gray-600"
+      case "tailwind":
+        return "from-teal-400 to-cyan-600"
       default:
         return "from-gray-700 to-gray-900"
     }
