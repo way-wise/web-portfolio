@@ -9,9 +9,7 @@ const categories = [
     label: "No-Code Solutions",
     subcategories: [
       { id: "wordpress", label: "WordPress" },
-      { id: "shopify", label: "Shopify" },
-      { id: "wix", label: "Wix" },
-      { id: "webflow", label: "Webflow" }
+      { id: "shopify", label: "Shopify" }
     ]
   },
   { id: "backend", label: "Backend" },
@@ -67,10 +65,6 @@ export default function CategoryNav({ activeCategory, onCategoryChange, mobile =
         return "from-blue-400 to-blue-600"
       case "shopify":
         return "from-green-400 to-green-600"
-      case "wix":
-        return "from-purple-400 to-purple-600"
-      case "webflow":
-        return "from-cyan-400 to-cyan-600"
       case "email-templates":
         return "from-pink-400 to-rose-600"
       case "react":
